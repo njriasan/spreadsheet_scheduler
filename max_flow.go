@@ -1,4 +1,4 @@
-package scheduler
+package main
 
 func (g *Graph) maxFlow(src *Vertex, dst *Vertex) {
 	var path *DirectedEdgeNode;
@@ -16,14 +16,16 @@ func (g *Graph) maxFlow(src *Vertex, dst *Vertex) {
 }
 
 func (g *Graph) bfsPath(src *Vertex, dst *Vertex) *DirectedEdgeNode {
-	var q VertexQueue
+	var q *VertexQueue
+	q = &VertexQueue{nil, nil}
 	prev := make(map[*Vertex]*DirectedEdge)
 	marked := make(map[*Vertex]bool)
 	for _, element := range g.vertices {
 		prev[element] = nil
 		marked[element] = false
 	}
-	var path DirectedEdgeNode
+	marked[src] = true
+	var path *DirectedEdgeNode
 	q.add(src)
 	for ;!q.isEmpty(); {
 		v := q.pop()
@@ -38,10 +40,10 @@ func (g *Graph) bfsPath(src *Vertex, dst *Vertex) *DirectedEdgeNode {
 	if prev[dst] == nil {
 		return nil
 	}
-	end := dst
+	end := prev[dst]
 	for ;end != nil; {
-		path = DirectedEdgeNode{element: prev[end], next: &path}
-		end = prev[end].src
+		path = &(DirectedEdgeNode{element: end, next: path})
+		end = prev[end.src]
 	}
-	return &path
+	return path
 }

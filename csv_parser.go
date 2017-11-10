@@ -1,4 +1,4 @@
-package scheduler
+package main
 
 import (
 	"os"
@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"bufio"
 	"strings"
+	"fmt"
 )
 /*
 	Takes in 3 command line arguments. A file name for the csv that should be
@@ -67,12 +68,15 @@ func read_from_sheet(file *os.File, capacity uint64) (events []*Event, candidate
 	if err != nil {
 		return
 	}
+	firstLine = strings.Trim(firstLine, "\r\n")
+	firstLine = strings.Trim(firstLine, "\r")
+	firstLine = strings.Trim(firstLine, "\n")
 	firstRow := strings.Split(firstLine, ",")
 	for i = 0; i < len(firstRow); i++ {
-		if strings.ToLower(firstRow[i]) == name {
+		if strings.ToLower(firstRow[i]) == Name {
 			nameCol = i
 		}
-		if strings.ToLower(firstRow[i]) == Starter {
+		if firstRow[i] == Starter {
 			eventStart = i + 1
 		}
 	}
@@ -80,10 +84,12 @@ func read_from_sheet(file *os.File, capacity uint64) (events []*Event, candidate
 	if err != nil {
 		return
 	}
+	line = strings.Trim(line, "\r\n")
+	line = strings.Trim(line, "\r")
+	line = strings.Trim(line, "\n")
 	linesplit = strings.Split(line, ",")
 	for j := eventStart; j < len(firstRow); j++ {
 		newCap, err = strconv.ParseUint(linesplit[j], 10, 64)
-
 		if err != nil {
 			return
 		}
@@ -97,6 +103,9 @@ func read_from_sheet(file *os.File, capacity uint64) (events []*Event, candidate
 		if err != nil {
 			return
 		}
+		line = strings.Trim(line, "\r\n")
+		line = strings.Trim(line, "\r")
+		line = strings.Trim(line, "\n")
 		linesplit = strings.Split(line, ",")
 		potentialEvents = make([]string, 0)
 		name = linesplit[nameCol]
@@ -113,6 +122,7 @@ func read_from_sheet(file *os.File, capacity uint64) (events []*Event, candidate
 func create_sheet(g *Graph, src *Vertex, name string, maxEventCapacity uint64) (err error) {
 	var rowNum uint
 	var csv *os.File
+	fmt.Println(maxEventCapacity)
 	size := uint(maxEventCapacity + 1)
 	rows := make([]string, maxEventCapacity + 1)
 	csv, err = os.Create(name + ".csv")
@@ -120,11 +130,14 @@ func create_sheet(g *Graph, src *Vertex, name string, maxEventCapacity uint64) (
 		return
 	}
 	for _, element := range src.edges {
-		rowNum = 0
+		rows[0] = rows[0] + element.dst.name + ","
+		rowNum = 1
 		for _, item := range element.dst.edges {
+			fmt.Println(item)
 			if item.dst != src {
 				if item.cost == 0 {
 					rows[rowNum] = rows[rowNum] + item.dst.name + ","
+					rowNum += 1
 				}
 			}
 		}

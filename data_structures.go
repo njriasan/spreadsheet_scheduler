@@ -1,4 +1,5 @@
-package scheduler
+package main
+
 
 type Event struct {
 	name string
@@ -41,11 +42,11 @@ type Graph struct {
 	vertices []*Vertex
 }
 
-func (q VertexQueue) isEmpty() bool {
+func (q *VertexQueue) isEmpty() bool {
 	return q.front == nil
 }
 
-func (q VertexQueue) pop() *Vertex {
+func (q *VertexQueue) pop() *Vertex {
 	if (q.front == q.end) {
 		q.end = nil
 	}
@@ -54,7 +55,7 @@ func (q VertexQueue) pop() *Vertex {
 	return temp.element
 }
 
-func (q VertexQueue) add(v *Vertex) {
+func (q *VertexQueue) add(v *Vertex) {
 	val := &(VertexNode{element: v, next: nil})
 	if (q.end == nil) {
 		q.front = val
@@ -63,4 +64,5 @@ func (q VertexQueue) add(v *Vertex) {
 		q.end.next = val
 		q.end = val
 	}
+
 }
