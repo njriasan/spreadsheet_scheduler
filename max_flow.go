@@ -1,7 +1,7 @@
 package scheduler
 
 func (g *Graph) maxFlow(src *Vertex, dst *Vertex) {
-	path DirectedEdgeNode;
+	var path *DirectedEdgeNode;
 	for path = g.bfsPath(src, dst); path != nil; path = g.bfsPath(src, dst) {
 		for ; path != nil; path = path.next {
 			path.element.cost -= 1
@@ -16,31 +16,32 @@ func (g *Graph) maxFlow(src *Vertex, dst *Vertex) {
 }
 
 func (g *Graph) bfsPath(src *Vertex, dst *Vertex) *DirectedEdgeNode {
-	q VertexQueue
-	prev := make(map[Vertex]*Edge)
-	marked := make(map[Vertex]bool)
+	var q VertexQueue
+	prev := make(map[*Vertex]*DirectedEdge)
+	marked := make(map[*Vertex]bool)
 	for _, element := range g.vertices {
 		prev[element] = nil
 		marked[element] = false
 	}
-	path DirectedEdgeNode
+	var path DirectedEdgeNode
 	q.add(src)
 	for ;!q.isEmpty(); {
 		v := q.pop()
-		for _, element := range q.edges {
-			if marked[*(element.dst)] == false && element.cost > 0 {
+		for _, element := range v.edges {
+			if marked[element.dst] == false && element.cost > 0 {
 				q.add(element.dst)
-				marked[*(element.dst)] = true
-				prev[*(element.dst)] = element
+				marked[element.dst] = true
+				prev[element.dst] = element
 			}
 		}
 	}
-	if prev[*dst] == nil {
+	if prev[dst] == nil {
 		return nil
 	}
 	end := dst
 	for ;end != nil; {
-		path = DirectedEdgeNode{element = prev[*(q.element)], next = &path}
+		path = DirectedEdgeNode{element: prev[end], next: &path}
+		end = prev[end].src
 	}
 	return &path
 }

@@ -8,7 +8,7 @@ type Event struct {
 type Candidate struct {
 	name string
 	capacity uint
-	potentialEvents []*Event
+	potentialEvents []string
 }
 
 type VertexNode struct {
@@ -39,10 +39,9 @@ type DirectedEdge struct {
 
 type Graph struct {
 	vertices []*Vertex
-	edges []*DirectedEdge
 }
 
-func (q VertexQueue) isEmpty() {
+func (q VertexQueue) isEmpty() bool {
 	return q.front == nil
 }
 
@@ -56,12 +55,12 @@ func (q VertexQueue) pop() *Vertex {
 }
 
 func (q VertexQueue) add(v *Vertex) {
-	v := VertexNode{element = v, next = nil}
+	val := &(VertexNode{element: v, next: nil})
 	if (q.end == nil) {
-		q.front = &v
-		q.end = &v
+		q.front = val
+		q.end = val
 	} else {
-		q.end.next = &v
-		q.end = &v
+		q.end.next = val
+		q.end = val
 	}
 }
